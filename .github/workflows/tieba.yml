@@ -24,4 +24,6 @@ jobs:
       - name: Run sign-in
         env:
           BDUSS: ${{ secrets.BDUSS }}
+          DINGTALK_WEBHOOK: ${{ secrets.DINGTALK_WEBHOOK }}   # ← 新增
+          DINGTALK_SECRET: ${{ secrets.DINGTALK_SECRET }}     # ← 新增
         run: python run.py
