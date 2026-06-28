@@ -7,11 +7,11 @@
 <img src="https://img.shields.io/github/languages/code-size/LuoSue/TiebaSignIn-1?color=blueviolet">
 </div>
 
-这个项目forked from LuoSue/TiebaSignIn-1
-额外添加了钉钉机器人通知
+
 
 # 简介
-
+这个项目forked from LuoSue/TiebaSignIn-1
+额外添加了钉钉机器人通知
 用的是手机端的接口，签到经验更多，用户只需要填写`BDUSS`即可，使用Github Actions自动签到。
 
 # 功能
