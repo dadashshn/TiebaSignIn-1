@@ -11,6 +11,19 @@ import logging
 import os
 import random
 import time
+# ... 原有 import ...
+import hashlib
+import hmac
+import base64
+import urllib.parse
+import json
+import requests  # 需确保环境中已安装 requests
+
+# ========== 【在此处添加钉钉配置】 ==========
+# 推荐：从环境变量读取（GitHub Actions 中在 Secrets 里配置）
+DINGTALK_WEBHOOK = os.environ.get("DINGTALK_WEBHOOK", "你的Webhook地址")
+DINGTALK_SECRET = os.environ.get("DINGTALK_SECRET", "你的加签密钥SEC开头")
+# ==========================================
 
 from tieba_client import TiebaClient
 
@@ -36,6 +49,41 @@ def parse_args() -> str:
         parser.error("请通过 --bduss 参数或 BDUSS 环境变量提供 BDUSS")
     return bduss
 
+def send_dingtalk_notification(title: str, text: str) -> None:
+    """发送钉钉机器人通知（带加签验证）"""
+    if not DINGTALK_WEBHOOK or not DINGTALK_SECRET:
+        logger.warning("未配置钉钉 Webhook 或 Secret，跳过通知")
+        return
+
+    try:
+        # 生成加签参数
+        timestamp = str(round(time.time() * 1000))
+        string_to_sign = f"{timestamp}\n{DINGTALK_SECRET}"
+        hmac_code = hmac.new(
+            DINGTALK_SECRET.encode("utf-8"),
+            string_to_sign.encode("utf-8"),
+            digestmod=hashlib.sha256,
+        ).digest()
+        sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
+
+        # 拼接完整 URL
+        url = f"{DINGTALK_WEBHOOK}&timestamp={timestamp}&sign={sign}"
+
+        # 构造 Markdown 消息体
+        payload = {
+            "msgtype": "markdown",
+            "markdown": {"title": title, "text": text},
+        }
+
+        resp = requests.post(url, json=payload, timeout=10)
+        result = resp.json()
+
+        if result.get("errcode") == 0:
+            logger.info("钉钉通知发送成功")
+        else:
+            logger.error(f"钉钉通知发送失败: {result}")
+    except Exception as e:
+        logger.error(f"钉钉通知异常: {e}")
 
 def main() -> None:
     bduss = parse_args()
@@ -100,6 +148,10 @@ def main() -> None:
     )
     logger.info(summary)
 
+
+    # ========== 【在此处调用钉钉通知】 ==========
+    send_dingtalk_notification("贴吧签到汇总", summary)
+    # ==========================================
 
 if __name__ == "__main__":
     main()
