@@ -7,6 +7,9 @@
 <img src="https://img.shields.io/github/languages/code-size/LuoSue/TiebaSignIn-1?color=blueviolet">
 </div>
 
+这个项目forked from LuoSue/TiebaSignIn-1
+额外添加了钉钉机器人通知
+
 # 简介
 
 用的是手机端的接口，签到经验更多，用户只需要填写`BDUSS`即可，使用Github Actions自动签到。
@@ -67,6 +70,13 @@ BDUSS | xxxxxxxxxxx
 Name | Value
 -|-
 SCKEY | xxxxxxxxxx
+| Secret 名称 | 值 |
+| :--- | :--- |
+| `DINGTALK_WEBHOOK` | 完整的 Webhook URL（含 `access_token=xxx`） |
+| `DINGTALK_SECRET` | 加签密钥（`SEC` 开头的字符串） |
+
+## 2026-6-28
+添加钉钉通知
 
 ## 2026-5-30
 
